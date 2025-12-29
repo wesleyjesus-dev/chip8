@@ -12,6 +12,8 @@ type CPU struct {
 
 	Memory [4096]uint8
 
+	Stack Stack
+
 	Display [64 * 32]uint8
 
 	DisplayTimer uint8
@@ -51,15 +53,16 @@ func (cpu *CPU) Cycle() {
 			switch opcode & 0x00FF {
 			case 0x0000:
 			case 0x00E0:
+				//display clear
 			case 0x00EE:
-
+				cpu.Flow(opcode)
 			}
 
 			fmt.Printf("Opcode 0x%04X not implemented.\n", opcode)
 		case 0x1000: // 1NNN: Jump to address NNN
 			fmt.Printf("Opcode 0x%04X not implemented.\n", opcode)
 		case 0x2000:
-			fmt.Printf("Opcode 0x%04X not implemented.\n", opcode)
+			cpu.Flow(opcode)
 		case 0x3000:
 			fmt.Printf("Opcode 0x%04X not implemented.\n", opcode)
 		case 0x4000:
@@ -84,7 +87,7 @@ func (cpu *CPU) Cycle() {
 			fmt.Printf("Set I to %03X\n", nnn)
 			cpu.I = nnn
 		case 0xB000:
-			fmt.Printf("Opcode 0x%04X not implemented.\n", opcode)
+			cpu.Flow(opcode)
 		case 0xC000:
 			fmt.Printf("Opcode 0x%04X not implemented.\n", opcode)
 		case 0xD000:
@@ -97,4 +100,41 @@ func (cpu *CPU) Cycle() {
 			fmt.Printf("Opcode 0x%04X not implemented.\n", opcode)
 		}
 	}
+}
+
+func (cpu *CPU) Flow(opcode uint16) {
+	switch opcode & 0xF000 {
+	case 0x2000:
+		cpu.Flow2NNN(opcode)
+	case 0x0000:
+		if opcode&0x00FF == 0x00EE {
+			cpu.Flow00EEOpcode(opcode)
+		}
+	case 0x1000:
+		cpu.Flow1NNN(opcode)
+	case 0xB000:
+		cpu.FlowBNNN(opcode)
+	}
+}
+
+func (cpu *CPU) Flow2NNN(opcode uint16) {
+	nnn := opcode & 0x0FFF
+	cpu.Stack.Push(cpu.PC + 2)
+	cpu.PC = nnn
+}
+
+func (cpu *CPU) Flow00EEOpcode(opcode uint16) {
+	address := cpu.Stack.Pop()
+	cpu.PC = address
+}
+
+func (cpu *CPU) Flow1NNN(opcode uint16) {
+	nnn := opcode & 0x0FFF
+	cpu.PC = nnn
+}
+
+func (cpu *CPU) FlowBNNN(opcode uint16) {
+	v0 := cpu.V[0]
+	nnn := opcode & 0x0FFF
+	cpu.PC = uint16(v0) + nnn
 }
