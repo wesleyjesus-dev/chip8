@@ -104,7 +104,7 @@ func (cpu *CPU) Cycle() {
 
 // write the value of vX as BCD value at the addresses I, I+1 and I+2
 func (cpu *CPU) BCDOpcode(opcode uint16) {
-	x := opcode & 0x0F00 >> 8
+	x := int((opcode & 0x0F00) >> 8)
 	v := cpu.V[x]
 
 	cpu.Memory[cpu.I] = v / 100         // here take the rest of division [C]
@@ -113,8 +113,8 @@ func (cpu *CPU) BCDOpcode(opcode uint16) {
 }
 
 func (cpu *CPU) Assign(opcode uint16) {
-	x := (opcode & 0x0F00) >> 8
-	y := (opcode & 0x00F0) >> 4
+	x := int((opcode & 0x0F00) >> 8)
+	y := int((opcode & 0x00F0) >> 4)
 	cpu.V[x] = cpu.V[y]
 	cpu.PC += 2
 }

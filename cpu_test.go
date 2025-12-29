@@ -50,13 +50,38 @@ func TestBCD(t *testing.T) {
 
 func TestAssign(t *testing.T) {
 	cpu := NewCPU()
+
+	cpu.V[2] = 42
+	cpu.V[1] = 0
+	cpu.PC = 0x200
+
 	cpu.Assign(0x8120)
-	if cpu.V[0x1] != cpu.V[0x2] {
-		t.Errorf("Program count is incorrect")
+
+	if cpu.V[1] != 42 {
+		t.Errorf("V1 should be 42, but is %d", cpu.V[1])
+	}
+
+	if cpu.V[2] != 42 {
+		t.Errorf("V2 don't should be changed")
+	}
+
+	if cpu.PC != 0x202 {
+		t.Errorf("PC should be next to 0x202, but is 0x%X", cpu.PC)
 	}
 }
 
 func TestBitOROp(t *testing.T) {
 	cpu := NewCPU()
-	cpu.BitOROp(0x8111)
+	cpu.V[1] = 100
+	cpu.V[2] = 200
+
+	cpu.BitOROp(0x8121)
+
+	if cpu.V[1] == 64 {
+		t.Errorf("The Bitwise AND is incorrect")
+	}
+
+	if cpu.PC != 0x202 {
+		t.Errorf("PC not incremented")
+	}
 }
