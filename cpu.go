@@ -151,3 +151,25 @@ func (cpu *CPU) BitOROp(opcode uint16) {
 
 	cpu.PC += 2
 }
+
+func (cpu *CPU) BitANDOp(opcode uint16) {
+	x := int((opcode & 0x0F00) >> 8)
+	y := int((opcode & 0x00F0) >> 4)
+	vx := cpu.V[x]
+	vy := cpu.V[y]
+
+	cpu.V[x] = vx & vy
+
+	cpu.PC += 2
+}
+
+func (cpu *CPU) BitXOROp(opcode uint16) {
+	x := int((opcode & 0x0F00) >> 8)
+	y := int((opcode & 0x00F0) >> 4)
+	vx := cpu.V[x]
+	vy := cpu.V[y]
+
+	cpu.V[x] = vx ^ vy
+
+	cpu.PC += 2
+}

@@ -77,11 +77,43 @@ func TestBitOROp(t *testing.T) {
 
 	cpu.BitOROp(0x8121)
 
-	if cpu.V[1] == 64 {
+	if cpu.V[1] != 236 {
+		t.Errorf("The Bitwise OR is incorrect")
+	}
+
+	if cpu.PC != 0x202 {
+		t.Errorf("PC not incremented")
+	}
+}
+
+func TestBitANDOp(t *testing.T) {
+	cpu := NewCPU()
+	cpu.V[1] = 100
+	cpu.V[2] = 200
+
+	cpu.BitANDOp(0x8122)
+
+	if cpu.V[1] != 64 {
 		t.Errorf("The Bitwise AND is incorrect")
 	}
 
 	if cpu.PC != 0x202 {
 		t.Errorf("PC not incremented")
+	}
+}
+
+func TestBitXOROp(t *testing.T) {
+	cpu := NewCPU()
+	cpu.V[1] = 100
+	cpu.V[2] = 200
+
+	cpu.BitXOROp(0x8123)
+
+	if cpu.V[1] != 172 {
+		t.Errorf("The bitwise XOR is incorrect")
+	}
+
+	if cpu.PC != 0x202 {
+		t.Errorf("PC not incoremented")
 	}
 }
