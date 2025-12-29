@@ -140,3 +140,14 @@ func (cpu *CPU) FlowBNNN(opcode uint16) {
 	nnn := opcode & 0x0FFF
 	cpu.PC = uint16(v0) + nnn
 }
+
+func (cpu *CPU) BitOROp(opcode uint16) {
+	x := int((opcode & 0x0F00) >> 8)
+	y := int((opcode & 0x00F0) >> 4)
+	vx := cpu.V[x]
+	vy := cpu.V[y]
+
+	cpu.V[x] = vx | vy
+
+	cpu.PC += 2
+}

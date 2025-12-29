@@ -55,3 +55,8 @@ func TestAssign(t *testing.T) {
 		t.Errorf("Program count is incorrect")
 	}
 }
+
+func TestBitOROp(t *testing.T) {
+	cpu := NewCPU()
+	cpu.BitOROp(0x8111)
+}
