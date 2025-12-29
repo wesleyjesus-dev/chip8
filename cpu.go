@@ -55,14 +55,14 @@ func (cpu *CPU) Cycle() {
 			case 0x00E0:
 				//display clear
 			case 0x00EE:
-				cpu.Flow(opcode)
+				cpu.Flow00EEOpcode(opcode)
 			}
 
 			fmt.Printf("Opcode 0x%04X not implemented.\n", opcode)
 		case 0x1000: // 1NNN: Jump to address NNN
 			fmt.Printf("Opcode 0x%04X not implemented.\n", opcode)
 		case 0x2000:
-			cpu.Flow(opcode)
+			cpu.Flow2NNN(opcode)
 		case 0x3000:
 			fmt.Printf("Opcode 0x%04X not implemented.\n", opcode)
 		case 0x4000:
@@ -87,7 +87,7 @@ func (cpu *CPU) Cycle() {
 			fmt.Printf("Set I to %03X\n", nnn)
 			cpu.I = nnn
 		case 0xB000:
-			cpu.Flow(opcode)
+			cpu.FlowBNNN(opcode)
 		case 0xC000:
 			fmt.Printf("Opcode 0x%04X not implemented.\n", opcode)
 		case 0xD000:
@@ -102,19 +102,21 @@ func (cpu *CPU) Cycle() {
 	}
 }
 
-func (cpu *CPU) Flow(opcode uint16) {
-	switch opcode & 0xF000 {
-	case 0x2000:
-		cpu.Flow2NNN(opcode)
-	case 0x0000:
-		if opcode&0x00FF == 0x00EE {
-			cpu.Flow00EEOpcode(opcode)
-		}
-	case 0x1000:
-		cpu.Flow1NNN(opcode)
-	case 0xB000:
-		cpu.FlowBNNN(opcode)
-	}
+// write the value of vX as BCD value at the addresses I, I+1 and I+2
+func (cpu *CPU) BCDOpcode(opcode uint16) {
+	x := opcode & 0x0F00 >> 8
+	v := cpu.V[x]
+
+	cpu.Memory[cpu.I] = v / 100         // here take the rest of division [C]
+	cpu.Memory[cpu.I+1] = (v / 10) % 10 // removing the last digit [D]
+	cpu.Memory[cpu.I+2] = v % 10        // take the unit [U]
+}
+
+func (cpu *CPU) Assign(opcode uint16) {
+	x := (opcode & 0x0F00) >> 8
+	y := (opcode & 0x00F0) >> 4
+	cpu.V[x] = cpu.V[y]
+	cpu.PC += 2
 }
 
 func (cpu *CPU) Flow2NNN(opcode uint16) {

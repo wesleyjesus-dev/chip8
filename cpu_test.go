@@ -31,3 +31,27 @@ func TestFlow0Opcode(t *testing.T) {
 		t.Errorf("Program coun is incorrect")
 	}
 }
+
+func TestBCD(t *testing.T) {
+	cpu := NewCPU()
+	cpu.V[0x1] = 123
+	cpu.BCDOpcode(0xF133)
+
+	if cpu.Memory[cpu.I] != 1 {
+		t.Errorf("Centenas incorretas: esperado 1, obteve %d", cpu.Memory[cpu.I])
+	}
+	if cpu.Memory[cpu.I+1] != 2 {
+		t.Errorf("Dezenas incorretas: esperado 2, obteve %d", cpu.Memory[cpu.I+1])
+	}
+	if cpu.Memory[cpu.I+2] != 3 {
+		t.Errorf("Unidades incorretas: esperado 3, obteve %d", cpu.Memory[cpu.I+2])
+	}
+}
+
+func TestAssign(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Assign(0x8120)
+	if cpu.V[0x1] != cpu.V[0x2] {
+		t.Errorf("Program count is incorrect")
+	}
+}
