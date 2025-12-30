@@ -184,3 +184,17 @@ func (cpu *CPU) BitShiftRightOp(opcode uint16) {
 
 	cpu.PC += 2
 }
+
+func (cpu *CPU) BitShiftLeftOp(opcode uint16) {
+
+	x := int((opcode & 0x0F00) >> 8)
+	vx := cpu.V[x]
+	msb := (vx >> 7) & 0x1
+	if msb == 1 {
+		cpu.V[0xF] = 1
+	} else {
+		cpu.V[0xF] = 0
+	}
+	cpu.V[x] = vx << 1
+	cpu.PC += 2
+}
