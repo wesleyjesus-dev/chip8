@@ -173,3 +173,14 @@ func (cpu *CPU) BitXOROp(opcode uint16) {
 
 	cpu.PC += 2
 }
+
+func (cpu *CPU) BitShiftRightOp(opcode uint16) {
+	x := int((opcode & 0x0F00) >> 8)
+
+	vx := cpu.V[x]
+
+	cpu.V[0xF] = vx & 0x1
+	cpu.V[x] = vx >> 1
+
+	cpu.PC += 2
+}

@@ -117,3 +117,20 @@ func TestBitXOROp(t *testing.T) {
 		t.Errorf("PC not incoremented")
 	}
 }
+
+func TestBitShiftRightOp(t *testing.T) {
+	cpu := NewCPU()
+	cpu.V[1] = 100
+
+	cpu.BitShiftRightOp(0x8126)
+
+	if cpu.V[1] != 50 {
+		t.Errorf("The bitwise shift right is incorrect")
+	}
+	if cpu.V[0xF] != 0 {
+		t.Errorf("The bitwise shift right is incorrect")
+	}
+	if cpu.PC != 0x202 {
+		t.Errorf("PC not incremented")
+	}
+}
